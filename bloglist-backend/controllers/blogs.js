@@ -13,8 +13,8 @@ router.get('/', async (request, response) => {
     response.json(blogs.map(blog => blog.toJSON()))
 })
 
-router.get('/:id', blogFinder, async (request, response) => { 
-    console.log('get ', request.params.id) 
+router.get('/:id', blogFinder, async (request, response) => {
+    console.log('get ', request.params.id)
 
     if (request.blog) {
         response.json(request.blog.toJSON())
@@ -36,13 +36,23 @@ router.post('/', async (request, response) => {
 
 router.delete('/:id', blogFinder, async (request, response) => {
     console.log('delete ', request.params.id)
- 
+
     if (request.blog) {
         await request.blog.destroy()
-      }
-      response.status(204).end() 
+    }
+    response.status(204).end()
 })
 
+
+router.put('/:id', blogFinder, async (request, response) => {
+    if (request.blog) {
+        request.blog.likes = request.body.likes
+        await request.blog.save()
+        response.json(request.blog)
+    } else {
+        response.status(404).end()
+    }
+})
 
 
 module.exports = router
