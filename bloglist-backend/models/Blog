@@ -30,16 +30,12 @@ Blog.init({
     title: {
         type: DataTypes.TEXT,
         allowNull: false
-    },
-    important: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
-    }
+    } 
 }, {
     sequelize,
     underscored: true,
     timestamps: false,
-    modelName: 'note'
+    modelName: 'blog'
 })
 
 Blog.sync()

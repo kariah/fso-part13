@@ -6,7 +6,7 @@ blogsRouter.get('/', async (request, response) => {
     console.log('blog ', Blog)
     const blogs = await Blog.findAll()
 
-    response.json(blogs.map(note => note.toJSON()))
+    response.json(blogs.map(blog => blog.toJSON()))
 })
 
 blogsRouter.get('/:id', async (request, response) => {
@@ -20,12 +20,14 @@ blogsRouter.get('/:id', async (request, response) => {
     }
 })
 
-blogsRouter.post('/', async (req, res) => {
+blogsRouter.post('/', async (request, response) => {
+    console.log('post ', request.body)
+
     try {
-        const blog = await Blog.create(req.body)
-        return res.json(blog)
+        const blog = await Blog.create(request.body)
+        return response.json(blog)
     } catch (error) {
-        return res.status(400).json({ error })
+        return response.status(400).json({ error })
     }
 })
 
@@ -33,8 +35,11 @@ blogsRouter.delete('/:id', async (request, response) => {
     console.log('delete ', request.params.id)
  
     const blog = await Blog.findByPk(request.params.id)
+
+    // console.log(blog)
+
     if (blog) { 
-        await blog.delete()
+        await blog.destroy()
         response.json(blog)
     } else {
         response.status(404).end()
