@@ -1,16 +1,5 @@
-require('dotenv').config()
-const { Sequelize, Model, DataTypes } = require('sequelize')
-const express = require('express')
-const app = express()
-
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
-        }
-    },
-});
+const { Model, DataTypes } = require('sequelize') 
+const { sequelize } = require('../utils/db')    
 
 class Blog extends Model { }
 Blog.init({
@@ -36,13 +25,7 @@ Blog.init({
     underscored: true,
     timestamps: false,
     modelName: 'blog'
-})
-
-Blog.sync()
+}) 
  
 module.exports = Blog
-
-// const PORT = process.env.PORT || 3001
-// app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`)
-// })
+ 

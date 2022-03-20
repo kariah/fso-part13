@@ -1,26 +1,29 @@
-const blogsRouter = require('express').Router()
-const Blog = require('../models/blog')
- 
+const router = require('express').Router()
+const Blog = require('../models')
 
-blogsRouter.get('/', async (request, response) => {
+const blogFinder = async (request, response, next) => {
+    request.blog = await Blog.findByPk(request.params.id)
+    next()
+}
+
+router.get('/', async (request, response) => {
     console.log('blog ', Blog)
     const blogs = await Blog.findAll()
 
     response.json(blogs.map(blog => blog.toJSON()))
 })
 
-blogsRouter.get('/:id', async (request, response) => {
-    console.log('get ', request.params.id)
+router.get('/:id', blogFinder, async (request, response) => { 
+    console.log('get ', request.params.id) 
 
-    const blog = await Blog.findByPk(request.params.id)
-    if (blog) {
-        response.json(blog.toJSON())
+    if (request.blog) {
+        response.json(request.blog.toJSON())
     } else {
         response.status(404).end()
     }
 })
 
-blogsRouter.post('/', async (request, response) => {
+router.post('/', async (request, response) => {
     console.log('post ', request.body)
 
     try {
@@ -31,22 +34,15 @@ blogsRouter.post('/', async (request, response) => {
     }
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
+router.delete('/:id', blogFinder, async (request, response) => {
     console.log('delete ', request.params.id)
  
-    const blog = await Blog.findByPk(request.params.id)
-
-    // console.log(blog)
-
-    if (blog) { 
-        await blog.destroy()
-        response.json(blog)
-    } else {
-        response.status(404).end()
-    }
-
+    if (request.blog) {
+        await request.blog.destroy()
+      }
+      response.status(204).end() 
 })
 
 
 
-module.exports = blogsRouter
+module.exports = router
