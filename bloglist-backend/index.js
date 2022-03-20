@@ -19,7 +19,7 @@ app.use(express.json())
 const blogsRouter = require('./controllers/blogs')
 app.use('/api/blogs', blogsRouter)
 
-// const PORT = 3001
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`)
-// })
+const PORT = 3001
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})

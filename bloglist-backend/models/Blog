@@ -43,27 +43,10 @@ Blog.init({
 })
 
 Blog.sync()
-
-// app.get('/api/blogs', async (req, res) => {
-//   const notes = await Note.findAll()
-//   res.json(notes)
-// })
+ 
+module.exports = Blog
 
 // const PORT = process.env.PORT || 3001
 // app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`)
+//     console.log(`Server running on port ${PORT}`)
 // })
-
-// module.exports = Blog
-
-//module.exports = sequelize.model(Blog)
-
-app.get('/api/blogs', async (req, res) => {
-    const blogs = await Blog.findAll()
-    res.json(blogs)
-})
-
-const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
