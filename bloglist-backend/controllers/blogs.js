@@ -1,66 +1,78 @@
 const router = require('express').Router()
-const Blog = require('../models')
+const Blog = require('../models/blog')
+const User = require('../models/user')
 require('express-async-errors');
 
-const blogFinder = async (request, response, next) => {
-    request.blog = await Blog.findByPk(request.params.id)
+const blogFinder = async (req, res, next) => {
+    req.blog = await Blog.findByPk(req.params.id)
     next()
 }
 
-router.get('/', async (request, response) => {
-    console.log('blog ', Blog)
-    const blogs = await Blog.findAll()
+router.get('/', async (req, res) => {
+    // console.log('blog ', Blog)
+    // const blogs = await Blog.findAll()
 
-    response.json(blogs.map(blog => blog.toJSON()))
+    const blogs = await Blog.findAll({
+        attributes: { exclude: ['userId'] },
+        include: {
+          model: User,
+          attributes: ['name']
+        }
+      })
+
+    res.json(blogs.map(blog => blog.toJSON()))
 })
 
-router.get('/:id', blogFinder, async (request, response, next) => {
-    console.log('get ', request.params.id)
+router.get('/:id', blogFinder, async (req, res, next) => {
+    console.log('get ', req.params.id)
 
-    if (request.blog) {
-        response.json(request.blog.toJSON())
+    if (req.blog) {
+        res.json(req.blog.toJSON())
     } else {
         next('Not found');
-        // response.status(404).end()
+        // res.status(404).end()
     }
 })
 
-router.post('/', async (request, response, next) => {
-    console.log('post ', request.body)
+router.post('/', async (req, res, next) => {
+    console.log('post ', req.body)
+
+    // const user = await User.findOne()
+    // const note = await Böpg.create({ ...req.body, userId: user.id })
 
     try {
-        const blog = await Blog.create(request.body)
-        return response.json(blog)
+        const blog = await Blog.create(req.body)
+        return res.json(blog)
     } catch (error) {
-        // return response.status(400).json({ error })
+        // return res.status(400).json({ error })
         next('Post failed');
     }
 })
 
-router.delete('/:id', blogFinder, async (request, response, next) => {
-    console.log('delete ', request.params.id)
+router.delete('/:id', blogFinder, async (req, res, next) => {
+    console.log('delete ', req.params.id)
 
-    if (request.blog) {
-        await request.blog.destroy()
+    if (req.blog) {
+        await req.blog.destroy()
     }
     else
     {
         next('Not found');
     }
-    // response.status(204).end()
+    // res.status(204).end()
 })
 
 
-router.put('/:id', blogFinder, async (request, response, next) => {  
-    if (request.blog) {
+router.put('/:id', blogFinder, async (req, res, next) => {  
+    if (req.blog) {
         console.log('put1')
 
-        request.blog.likes = request.body.likes
-        await request.blog.save()
-        response.json(request.blog)
+        req.blog.likes = req.body.likes
+        await req.blog.save()
+        res.json(req.blog)
     } else {
-        // response.status(404).end()A
-        // return response.status(404).json({
+        // res.status(404).end()A
+        // return res.status(404).json({
         //     error: 'invalid data'
         // }) 
         next('Invalid data');
