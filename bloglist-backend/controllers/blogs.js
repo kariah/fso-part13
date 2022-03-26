@@ -66,10 +66,24 @@ router.post('/', tokenExtractor, async (req, res, next) => {
     }
 })
 
-router.delete('/:id', blogFinder, async (req, res, next) => {
-    console.log('delete ', req.params.id)
+router.delete('/:id', tokenExtractor, blogFinder, async (req, res, next) => {
+    console.log('delete', req.params.id)
+
+    const user = await User.findByPk(req.decodedToken.id) 
+    console.log('user.id ', user.id)
+    console.log('user ', user)
+
+    if (req.user === null) {
+        return res.status(401).json({
+          error: 'user missing or invalid'
+        })
+      } 
+
+    console.log('req.blog ', req.blog)
+
     if (req.blog) {
         await req.blog.destroy()
+        res.status(204).end()
     }
     else
     {

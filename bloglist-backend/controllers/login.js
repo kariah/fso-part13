@@ -1,46 +1,11 @@
-// const { User, Blog } = require('../models') 
-
-// const jwt = require('jsonwebtoken')
-// const { SECRET } = require('../utils/config')
-// const router = require('express').Router()
-
-// const tokenExtractor = (req, res, next) => {
-//     const authorization = req.get('authorization')
-//     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-//         try {
-//             console.log(authorization.substring(7))
-//             req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-//         } catch (error) {
-//             console.log(error)
-//             return res.status(401).json({ error: 'token invalid' })
-//         }
-//     } else {
-//         return res.status(401).json({ error: 'token missing' })
-//     }
-//     next()
-// }
-
-// router.post('/', tokenExtractor, async (req, res) => {
-//     try {
-//         const user = await User.findByPk(req.decodedToken.id)
-//         const blog = await Blog.create({ ...req.body, userId: user.id, date: new Date() })
-//         res.json(blog)
-//     } catch (error) {
-//         return res.status(400).json({ error })
-//     }
-// })
-
-// module.exports = router
-
-
 const jwt = require('jsonwebtoken')
 const router = require('express').Router()
 
 const { SECRET } = require('../utils/config')
 const User = require('../models/user')
 
-router.post('/', async (request, response) => {
-  const body = request.body
+router.post('/', async (req, res) => {
+  const body = req.body
 
   const user = await User.findOne({
     where: {
@@ -51,7 +16,7 @@ router.post('/', async (request, response) => {
   const passwordCorrect = body.password === 'salainen'
 
   if (!(user && passwordCorrect)) {
-    return response.status(401).json({
+    return res.status(401).json({
       error: 'invalid username or password'
     })
   }
@@ -63,7 +28,7 @@ router.post('/', async (request, response) => {
 
   const token = jwt.sign(userForToken, SECRET)
 
-  response
+  res
     .status(200)
     .send({ token, username: user.username, name: user.name })
 })
