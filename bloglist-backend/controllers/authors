@@ -1,0 +1,47 @@
+const router = require('express').Router()
+const { Blog, User } = require('../models')
+const { Op } = require('sequelize')
+const sequelize = require('sequelize')
+
+const blogFinder = async (req, res, next) => {
+    req.blog = await Blog.findByPk(req.params.id)
+    next()
+}
+
+router.get('/', async (req, res) => {
+    let where = {}
+    let order = [[]]
+
+    if (req.query.search) {
+        where = {
+            [Op.or]: [
+                {
+                    title: {
+                        [Op.iLike]: `%${req.query.search}%`
+                    }
+                },
+                {
+                    author: {
+                        [Op.iLike]: `%${req.query.search}%`
+                    }
+                }
+            ]
+        }
+    }
+ 
+    const blogs = await Blog.findAll({ 
+        attributes: [
+            'author',
+            [sequelize.fn('COUNT', sequelize.col('title')), 'blogs'],
+            [sequelize.fn('SUM', sequelize.col('likes')), 'likes'] 
+          ],
+          group: 'author', 
+          order: [[sequelize.fn('SUM', sequelize.col('likes')), "DESC"]],
+    })
+
+    res.json(blogs.map(blog => blog.toJSON()))
+})
+
+
+
+module.exports = router
