@@ -3,17 +3,19 @@ const { Blog, User } = require('../models')
 require('express-async-errors');
 
 const userFinder = async (req, res, next) => {
-    req.user = await User.findByPk(req.params.id) 
+    req.user = await User.findByPk(req.params.id)
     next()
 } 
 
-router.get('/', async (req, res) => { 
+router.get('/', async (req, res) => {  
     const users = await User.findAll({
+        attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
         include: {
             model: Blog,
-            attributes: { exclude: ['userId'] }
+            attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] }
         }
     })
+
     res.json(users)
 })
 
@@ -36,10 +38,10 @@ router.get('/:id', userFinder, async (req, res, next) => {
     }
 })
 
-router.put('/:id', userFinder, async (req, res, next) => {   
-    console.log('put 1 ', req.body.username)
+router.put('/:id', userFinder, async (req, res, next) => {
+    console.log('put ', req.body.username)
+
     if (req.user) {
-        console.log('put 2 ', req.body.username)
 
         req.user.username = req.body.username
         await req.user.save()
@@ -50,8 +52,8 @@ router.put('/:id', userFinder, async (req, res, next) => {
         //     error: 'invalid data'
         // })  
         next('Invalid data');
-    } 
- })
+    }
+})
 
 
 module.exports = router
