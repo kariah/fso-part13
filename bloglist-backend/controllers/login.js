@@ -7,11 +7,15 @@ const User = require('../models/user')
 router.post('/', async (req, res) => {
   const body = req.body
 
+  console.log('bodo ', body)
+
   const user = await User.findOne({
     where: {
       username: body.username
     }
-  })
+  }) 
+
+  console.log('user ', user)
 
   const passwordCorrect = body.password === 'salainen'
 
