@@ -27,7 +27,7 @@ Reading.init({
   sequelize,
   underscored: true,
   timestamps: false,
-  modelName: 'reading'
+  modelName: 'readings'
 })
 
 module.exports = Reading
