@@ -1,5 +1,4 @@
 const { DataTypes } = require('sequelize')
-const { sequelize } = require('../utils/db')
 
 module.exports = {
   up: async ({ context: queryInterface }) => {
