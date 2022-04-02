@@ -27,21 +27,14 @@ Blog.init({
     year: {
         type: DataTypes.INTEGER,
         validate: {
-            customValidator(value) {
-                if (value < 1991 || value > sequelize.fn('YEAR', sequelize.fn('NOW'))) {
-                    throw new Error("Validation of year failed (must be > 1991 and < current year");
+            isValidYear(value) { 
+                const today = new Date();
+                const currentYear = today.getFullYear();   
+                if (value < 1991 || value > currentYear) { 
+                    throw new Error("Validation of year failed (must be greater than 1991 and smaller than current year")
                 }
             }
-        },
-        //defaultValue: 1991
-        // validate: {
-        //     min: 1991,
-        //     max: 2022,
-        //     // max: sequelize.fn('YEAR', sequelize.fn('NOW')),
-        //     // "error": [
-        //     //     "Validation of year failed (must be > 1991 and < current year)"
-        //     // ]
-        // }
+        } 
     },
 }, {
     sequelize,

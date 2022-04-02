@@ -54,9 +54,9 @@ router.get('/', async (req, res) => {
             ]
         }
     }
- 
-    order =  [
-        ['likes', 'DESC'] 
+
+    order = [
+        ['likes', 'DESC']
     ]
 
     const blogs = await Blog.findAll({
@@ -85,19 +85,25 @@ router.get('/:id', blogFinder, async (req, res, next) => {
 
 router.post('/', tokenExtractor, async (req, res, next) => {
     console.log('post ', req.body)
+
     try {
         const user = await User.findByPk(req.decodedToken.id)
 
-        console.log('user ', user)
+        // console.log('user ', user)
 
         const blog = await Blog.create({ ...req.body, userId: user.id, date: new Date() })
 
-        console.log('blog ', blog)
+        // console.log('blog ', blog)
 
         return res.json(blog)
     } catch (error) {
         // return res.status(400).json({ error })
-        next('Post failed');
+        if (error.message !== null) {
+            next(error.message)
+        }
+        else {
+            next("Post failed")
+        }
     }
 })
 
