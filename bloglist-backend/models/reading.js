@@ -1,9 +1,9 @@
 const { Model, DataTypes } = require('sequelize')
 const { sequelize } = require('../utils/db')
 
-class Readinglist extends Model {}
+class Reading extends Model {}
 
-Readinglist.init({
+Reading.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -27,7 +27,7 @@ Readinglist.init({
   sequelize,
   underscored: true,
   timestamps: false,
-  modelName: 'readinglist'
+  modelName: 'reading'
 })
 
-module.exports = Readinglist
+module.exports = Reading

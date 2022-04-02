@@ -1,9 +1,8 @@
 const router = require('express').Router()
-const { Readinglist } = require('../models')
+const { Reading } = require('../models')
 require('express-async-errors');
 const jwt = require('jsonwebtoken')
-const { SECRET } = require('../utils/config')
-const { Op } = require('sequelize')
+const { SECRET } = require('../utils/config') 
 
 const tokenExtractor = (req, res, next) => {
     const authorization = req.get('authorization')  
@@ -34,11 +33,11 @@ router.post('/', tokenExtractor, async (req, res, next) => {
         //const user = await User.findByPk(req.decodedToken.id) 
         // console.log('user ', user)
 
-        const readinglist = await Readinglist.create({ ...req.body })
+        const reading = await Reading.create({ ...req.body })
 
         // console.log('blog ', blog)
  
-        return res.json(readinglist)
+        return res.json(reading)
     } catch (error) { 
         if (error.message !== null) {
             next(error.message)
