@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { Blog, User, Reading } = require('../models')
+const { Blog, User, UserBlog } = require('../models')
 require('express-async-errors');
 
 const userFinder = async (req, res, next) => { 
@@ -7,16 +7,17 @@ const userFinder = async (req, res, next) => {
         attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
         include:[{
             model: Blog,
-            attributes: { exclude: ['userId'] }
+            as: 'readings',
+            attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] }
           },
-          {
-            model: Blog,
-            // as: 'readings',
-            attributes: { exclude: ['createdAt', 'updatedAt'] },
-            through: {
-              attributes: []
-            },
-          },
+        //   {
+        //     model: Blog,
+        //     as: 'readings',
+        //     attributes: { exclude: ['createdAt', 'updatedAt'] },
+        //     through: {
+        //       attributes: []
+        //     },
+        //   },
         ]
       })
 
