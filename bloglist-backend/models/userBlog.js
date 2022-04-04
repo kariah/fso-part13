@@ -19,7 +19,7 @@ UserBlog.init({
     allowNull: false,
     references: { model: 'users', key: 'id' },
   }, 
-  is_read: {
+  isRead: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
@@ -27,7 +27,7 @@ UserBlog.init({
   sequelize,
   underscored: true,
   timestamps: false,
-  modelName: 'userBlog'
+  modelName: 'userBlog' 
 })
 
 module.exports = UserBlog

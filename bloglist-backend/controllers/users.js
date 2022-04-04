@@ -2,24 +2,19 @@ const router = require('express').Router()
 const { Blog, User, UserBlog } = require('../models')
 require('express-async-errors');
 
-const userFinder = async (req, res, next) => { 
-    req.user = await User.findByPk(req.params.id, { 
+const userFinder = async (req, res, next) => {
+    req.user = await User.findByPk(req.params.id, {
         attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
-        include:[{
+        include: [{
             model: Blog,
             as: 'readings',
-            attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] }
-          },
-        //   {
-        //     model: Blog,
-        //     as: 'readings',
-        //     attributes: { exclude: ['createdAt', 'updatedAt'] },
-        //     through: {
-        //       attributes: []
-        //     },
-        //   },
+            attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
+            through: {
+                attributes: ['id', 'isRead']
+            },
+        },
         ]
-      })
+    })
 
     next()
 }
