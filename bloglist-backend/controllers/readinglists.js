@@ -1,11 +1,11 @@
 const router = require('express').Router()
-const { UserBlogs } = require('../models')
+const { Blog, User, UserBlogs } = require('../models')
 require('express-async-errors');
 const jwt = require('jsonwebtoken')
-const { SECRET } = require('../utils/config') 
+const { SECRET } = require('../utils/config')
 
 const tokenExtractor = (req, res, next) => {
-    const authorization = req.get('authorization')  
+    const authorization = req.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
         try {
             console.log(authorization.substring(7))
@@ -19,26 +19,37 @@ const tokenExtractor = (req, res, next) => {
     }
     next()
 }
-
-// const blogFinder = async (req, res, next) => {
-//     req.blog = await Blog.findByPk(req.params.id)
-//     next()
-// }
-
  
+
+const userFinder = async (req, res, next) => {
+    req.user = await User.findByPk(req.decodedToken.id, {
+        // attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
+        include: [{
+            model: Blog,
+            as: 'readings',
+            // attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
+            // through: {
+            //     attributes: ['id', 'read']
+            // },
+        },
+        ]
+    })
+
+
+    // console.log('user1 ', req.user);
+
+    next()
+}
+
+
 router.post('/', tokenExtractor, async (req, res, next) => {
     console.log('post ', req.body)
 
-    try {
-        //const user = await User.findByPk(req.decodedToken.id) 
-        // console.log('user ', user)
+    try { 
+        const userBlog = await UserBlogs.create({ ...req.body }) 
 
-        const userBlog = await UserBlogs.create({ ...req.body })
-
-        // console.log('blog ', blog)
- 
         return res.json(userBlog)
-    } catch (error) { 
+    } catch (error) {
         if (error.message !== null) {
             next(error.message)
         }
@@ -47,6 +58,23 @@ router.post('/', tokenExtractor, async (req, res, next) => {
         }
     }
 })
- 
+
+router.put('/:id',  tokenExtractor, userFinder, async (req, res, next) => {
+    console.log('put ', req.body.read, req.user.username)   
+    
+    if (req.user) { 
+        const userBlog =  await UserBlogs.findByPk(req.params.id) 
+         
+        userBlog.read = req.body.read 
+
+        await userBlog.save() 
+        res.json(userBlog)
+    } else {
+        
+        next('Invalid data');
+    }
+})
+
+
 
 module.exports = router

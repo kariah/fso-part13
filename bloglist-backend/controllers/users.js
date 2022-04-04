@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { Blog, User, UserBlogs } = require('../models')
+const { Blog, User } = require('../models')
 require('express-async-errors');
 
 const userFinder = async (req, res, next) => {
@@ -10,12 +10,11 @@ const userFinder = async (req, res, next) => {
             as: 'readings',
             attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
             through: {
-                attributes: ['id', 'isRead']
+                attributes: ['id', 'read']
             },
         },
         ]
     })
-
 
     next()
 }
@@ -41,9 +40,7 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-router.get('/:id', userFinder, async (req, res, next) => {
-    // const user = await User.findByPk(req.params.id)
-
+router.get('/:id', userFinder, async (req, res, next) => { 
     if (req.user) {
         res.json(req.user)
     } else {
@@ -55,7 +52,6 @@ router.put('/:id', userFinder, async (req, res, next) => {
     console.log('put ', req.body.username)
 
     if (req.user) {
-
         req.user.username = req.body.username
         await req.user.save()
         res.json(req.user)
