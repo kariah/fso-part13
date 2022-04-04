@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { UserBlog } = require('../models')
+const { UserBlogs } = require('../models')
 require('express-async-errors');
 const jwt = require('jsonwebtoken')
 const { SECRET } = require('../utils/config') 
@@ -33,7 +33,7 @@ router.post('/', tokenExtractor, async (req, res, next) => {
         //const user = await User.findByPk(req.decodedToken.id) 
         // console.log('user ', user)
 
-        const userBlog = await UserBlog.create({ ...req.body })
+        const userBlog = await UserBlogs.create({ ...req.body })
 
         // console.log('blog ', blog)
  

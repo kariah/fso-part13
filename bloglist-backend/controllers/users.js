@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { Blog, User, UserBlog } = require('../models')
+const { Blog, User, UserBlogs } = require('../models')
 require('express-async-errors');
 
 const userFinder = async (req, res, next) => {
@@ -15,6 +15,7 @@ const userFinder = async (req, res, next) => {
         },
         ]
     })
+
 
     next()
 }
