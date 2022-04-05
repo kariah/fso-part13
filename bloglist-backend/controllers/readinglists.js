@@ -22,21 +22,13 @@ const tokenExtractor = (req, res, next) => {
  
 
 const userFinder = async (req, res, next) => {
-    req.user = await User.findByPk(req.decodedToken.id, {
-        // attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
+    req.user = await User.findByPk(req.decodedToken.id, { 
         include: [{
             model: Blog,
-            as: 'readings',
-            // attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
-            // through: {
-            //     attributes: ['id', 'read']
-            // },
+            as: 'readings', 
         },
         ]
-    })
-
-
-    // console.log('user1 ', req.user);
+    }) 
 
     next()
 }
