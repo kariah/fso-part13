@@ -2,7 +2,24 @@ const router = require('express').Router()
 const { Blog, User } = require('../models')
 require('express-async-errors');
 
+// const paramMiddleware = (myParam) => {
+//     return (req, res, next) => {
+//         // implement your business logic using 'myParam'
+//         // ...
+//         next();
+//     }
+// }
+
 const userFinder = async (req, res, next) => {
+    const where = {};
+
+    if (req.query.read === 'true') {
+        where.read = true;
+    }
+    else if (req.query.read === 'false') {
+        where.read = false
+    }
+
     req.user = await User.findByPk(req.params.id, {
         attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
         include: [{
@@ -10,7 +27,7 @@ const userFinder = async (req, res, next) => {
             as: 'readings',
             attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
             through: {
-                attributes: ['id', 'read']
+                attributes: ['id', 'read'], where
             },
         },
         ]
@@ -18,6 +35,7 @@ const userFinder = async (req, res, next) => {
 
     next()
 }
+
 
 router.get('/', async (req, res) => {
     const users = await User.findAll({
@@ -40,7 +58,30 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-router.get('/:id', userFinder, async (req, res, next) => { 
+router.get('/:id', userFinder, async (req, res, next) => {
+    // const where = {};
+
+    // if (req.query.read === 'true') {
+    //     where.read = true;
+    // }
+    // else if (req.query.read === 'false') {
+    //     where.read = false
+    // }
+
+    // req.user = await User.findByPk(req.params.id, {
+    //     attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
+    //     include: [{
+    //         model: Blog,
+    //         as: 'readings',
+    //         attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
+    //         through: {
+    //             attributes: ['id', 'read'], where
+    //         },
+    //     },
+    //     ]
+    // })
+
+
     if (req.user) {
         res.json(req.user)
     } else {
