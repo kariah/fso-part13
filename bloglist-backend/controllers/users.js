@@ -59,29 +59,6 @@ router.post('/', async (req, res, next) => {
 })
 
 router.get('/:id', userFinder, async (req, res, next) => {
-    // const where = {};
-
-    // if (req.query.read === 'true') {
-    //     where.read = true;
-    // }
-    // else if (req.query.read === 'false') {
-    //     where.read = false
-    // }
-
-    // req.user = await User.findByPk(req.params.id, {
-    //     attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
-    //     include: [{
-    //         model: Blog,
-    //         as: 'readings',
-    //         attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
-    //         through: {
-    //             attributes: ['id', 'read'], where
-    //         },
-    //     },
-    //     ]
-    // })
-
-
     if (req.user) {
         res.json(req.user)
     } else {
