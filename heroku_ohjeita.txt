@@ -1,0 +1,2 @@
+heroku ps --app bloglist-backend-k
+heroku ps:stop run.1613 --app bloglist-backend-k (toimii)
