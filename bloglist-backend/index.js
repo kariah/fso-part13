@@ -10,12 +10,14 @@ const blogsRouter = require('./controllers/blogs')
 const authorsRouter = require('./controllers/authors')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
+const logoutRouter = require('./controllers/logout')
 const readingliststRouter = require('./controllers/readinglists')
 
 app.use('/api/blogs', blogsRouter)  
 app.use('/api/authors', authorsRouter)  
 app.use('/api/users', usersRouter)  
-app.use('/api/login', loginRouter)  
+app.use('/api/login', loginRouter) 
+app.use('/api/logout', logoutRouter)   
 app.use('/api/readinglists', readingliststRouter)  
 
 const start = async () => {

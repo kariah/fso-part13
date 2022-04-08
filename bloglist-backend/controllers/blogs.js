@@ -89,6 +89,8 @@ router.post('/', tokenExtractor, async (req, res, next) => {
     try {
         const user = await User.findByPk(req.decodedToken.id)
 
+        //TODO: Tarkista onko sessio voimassa
+
         // console.log('user ', user)
 
         const blog = await Blog.create({ ...req.body, userId: user.id, date: new Date() })

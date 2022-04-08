@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { Blog, User } = require('../models')
+const { Blog, User, Session } = require('../models')
 require('express-async-errors');
 
 // const paramMiddleware = (myParam) => {
@@ -9,6 +9,23 @@ require('express-async-errors');
 //         next();
 //     }
 // }
+
+const tokenExtractor = (req, res, next) => {
+    const authorization = req.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+        try {
+            console.log(authorization.substring(7))
+            req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+        } catch (error) {
+            console.log(error)
+            return res.status(401).json({ error: 'token invalid' })
+        }
+    } else {
+        return res.status(401).json({ error: 'token missing' })
+    }
+    next()
+}
+
 
 const userFinder = async (req, res, next) => {
     const where = {};
@@ -74,13 +91,10 @@ router.put('/:id', userFinder, async (req, res, next) => {
         await req.user.save()
         res.json(req.user)
     } else {
-        // res.status(404).end()
-        // return res.status(404).json({
-        //     error: 'invalid data'
-        // })  
         next('Invalid data');
     }
 })
+
 
 
 module.exports = router
