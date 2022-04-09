@@ -26,7 +26,19 @@ Session.init({
     sequelize,
     underscored: true,
     timestamps: true,
-    modelName: 'Session'
+    modelName: 'Session',
+    defaultScope: {
+        where: {
+            active: true
+        }
+    },
+    // scopes: { 
+    //     active: {
+    //         where: {
+    //             active: true
+    //         }
+    //     }, 
+    // }
 })
 
 module.exports = Session

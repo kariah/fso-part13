@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { Blog, User } = require('../models')
+const { Blog, User, Session } = require('../models')
 require('express-async-errors');
 const jwt = require('jsonwebtoken')
 const { SECRET } = require('../utils/config')
@@ -21,6 +21,27 @@ const tokenExtractor = (req, res, next) => {
     next()
 }
 
+const userFinder = async (req, res, next) => {
+    req.user = await User.findByPk(req.decodedToken.id, {
+        include: [{
+            model: Blog,
+            as: 'readings',
+        },
+        //Only users with active session
+        {
+            model: Session,
+            attributes: [],
+            where: {
+                active: true
+            }
+        }
+        ]
+    })
+
+    next()
+}
+
+
 const blogFinder = async (req, res, next) => {
     req.blog = await Blog.findByPk(req.params.id)
     next()
@@ -29,15 +50,7 @@ const blogFinder = async (req, res, next) => {
 router.get('/', async (req, res) => {
     let where = {}
     let order = [[]]
-
-    //13.13
-    // if (req.query.search) {
-    //     where.title = {
-    //         [Op.iLike]: `%${req.query.search}%`
-    //     }
-    // } 
-
-    //13.14
+ 
     if (req.query.search) {
         where = {
             [Op.or]: [
@@ -83,17 +96,16 @@ router.get('/:id', blogFinder, async (req, res, next) => {
     }
 })
 
-router.post('/', tokenExtractor, async (req, res, next) => {
+router.post('/', tokenExtractor, userFinder, async (req, res, next) => {
     console.log('post ', req.body)
 
     try {
-        const user = await User.findByPk(req.decodedToken.id)
-
-        //TODO: Tarkista onko sessio voimassa
-
-        // console.log('user ', user)
-
-        const blog = await Blog.create({ ...req.body, userId: user.id, date: new Date() })
+        //check if session valid
+        if (!req.user) {
+            return res.status(401).json({ error: 'operation not permitted' })
+        }
+ 
+        const blog = await Blog.create({ ...req.body, userId: req.user.id, date: new Date() })
 
         // console.log('blog ', blog)
 
@@ -110,16 +122,21 @@ router.post('/', tokenExtractor, async (req, res, next) => {
 })
 
 router.delete('/:id', tokenExtractor, blogFinder, async (req, res, next) => {
-    console.log('delete', req.params.id)
+    // console.log('delete', req.params.id)
 
-    const user = await User.findByPk(req.decodedToken.id)
-    console.log('user.id ', user.id)
-    console.log('user ', user)
+    // const user = await User.findByPk(req.decodedToken.id)
+    // console.log('user.id ', user.id)
+    // console.log('user ', user)
 
-    if (req.user === null) {
-        return res.status(401).json({
-            error: 'user missing or invalid'
-        })
+    // if (req.user === null) {
+    //     return res.status(401).json({
+    //         error: 'user missing or invalid'
+    //     })
+    // }
+
+    //check if session valid
+    if (!req.user) {
+        return res.status(401).json({ error: 'operation not permitted' })
     }
 
     console.log('req.blog ', req.blog)
@@ -130,8 +147,7 @@ router.delete('/:id', tokenExtractor, blogFinder, async (req, res, next) => {
     }
     else {
         next('Not found');
-    }
-    // res.status(204).end()
+    } 
 })
 
 
